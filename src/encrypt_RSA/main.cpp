@@ -1,5 +1,6 @@
 #include "encrypt_RSA.h"
 
+
 int main(int argc, char **argv)
 	{
 	if (argc > 3)
@@ -27,7 +28,7 @@ int main(int argc, char **argv)
 	
 	try
 		{
-		encrypt_file(fin, fout);
+		fprintf(stdout, "\n%s: Secret! {%lld}\n\n", argv[0], encrypt_file(fin, fout));
 		}
 	catch (...)
 		{

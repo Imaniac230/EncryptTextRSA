@@ -3,7 +3,7 @@
 
 int main(int argc, char **argv)
 	{
-	if (argc > 3)
+	if (argc > 4)
 		{
 		fprintf(stderr, "%s: Too many input arguments.\n\n", argv[0]);
 		close_program(argv[0]);
@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 
 	try
 		{
-		encrypt_file(fin, fout);
+		decrypt_file(fin, fout);
 		}
 	catch (...)
 		{

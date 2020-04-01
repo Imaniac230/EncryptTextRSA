@@ -87,17 +87,61 @@ void open_output_file(const int Aargc, char ** const Aargv, char *aFilename, FIL
 		}
 	}
 
-const CALC_INT calculate_key_pair(CALC_INT * const aPubE, CALC_INT * const aPrivE)
+const CALC_INT share_secret(const CALC_INT aVal)
 	{
-	if (!aPubE || !aPrivE)
+	CALC_INT res = aVal * START_POINT * 2;
+	return res;
+	}
+
+bool is_prime(const CALC_INT aNum)
+	{
+	if (aNum == 0 || aNum == 1)
+		return false;
+	if (aNum <= 3)
+		return true;
+
+	if (aNum % 2 == 0 || aNum % 3 == 0)
+		return false;
+	for (CALC_INT i = 5; i*i <= aNum; i = i + 6)
+		if (aNum % i == 0 || aNum % (i + 2) == 0)
+			return false;
+
+	return true;
+	}
+
+void generate_random_primes(CALC_INT * const aP, CALC_INT * const aQ)
+	{
+	if (!aP || !aQ)
 		throw Enullptr;
 
-	CALC_INT P_prime = 11, Q_prime = 23;
+	time_t t = 0;
+	srand((unsigned)time(&t));
+
+	do
+		{
+		*aP = rand() % LIMIT / 2;
+		while (!is_prime(*aP))
+			*aP = rand() % LIMIT / 2;
+
+		*aQ = rand() % LIMIT / 2;
+		while (!is_prime(*aQ))
+			*aQ = rand() % LIMIT / 2;
+
+		}while ((*aP * *aQ > LIMIT) || (*aP * *aQ < LOW_LIMIT));
+	}
+
+const CALC_INT calculate_key_pair(CALC_INT * const aPubE, CALC_INT * const aPrivE)
+	{
+	if (!aPubE)
+		throw Enullptr;
+
+	CALC_INT P_prime = 0, Q_prime = 0;
+	generate_random_primes(&P_prime, &Q_prime);
 
 	CALC_INT totient_phi = (P_prime - 1)*(Q_prime - 1);
 
 	CALC_INT mod_res = 0, factor_a = 0, factor_b = 0, factor_b_out = 0;
-	*aPubE = 1;
+	*aPubE = START_POINT;
 	while ((*aPubE < totient_phi) && (factor_b_out != 1))
 		{
 		mod_res = -1;
@@ -114,42 +158,46 @@ const CALC_INT calculate_key_pair(CALC_INT * const aPubE, CALC_INT * const aPriv
 			}
 		}
 
-	CALC_INT k_integer = 0;
-	CALC_INT zero_condition = (1 + k_integer * totient_phi) % *aPubE;
-	while (zero_condition != 0)
+	if (aPrivE)
 		{
-		++k_integer;
-		zero_condition = (1 + k_integer * totient_phi) % *aPubE;
+		CALC_INT k_integer = START_POINT * START_POINT;
+		CALC_INT zero_condition = (1 + k_integer * totient_phi) % *aPubE;
+		while (zero_condition != 0)
+			{
+			++k_integer;
+			zero_condition = (1 + k_integer * totient_phi) % *aPubE;
+			}
+
+		*aPrivE = (k_integer * totient_phi + 1) / *aPubE;
 		}
 
-	CALC_INT N_max = P_prime*Q_prime;
-	*aPrivE = (k_integer * totient_phi + 1) / *aPubE;
-
-	return N_max;
+	return P_prime * Q_prime;
 	}
 
-const CALC_CHAR encrypt_character(const CALC_CHAR aChar)
+const CALC_CHAR encrypt_character(const CALC_CHAR aChar, CALC_INT aExp, const CALC_INT aBound)
 	{
-	CALC_INT pub_exponent = 0, priv_exponent = 0;
-	CALC_INT max_bound = calculate_key_pair(&pub_exponent, &priv_exponent);
+	if (aBound == 1)
+		return (CALC_CHAR)0;
 
-	CALC_INT result = (CALC_INT)aChar;
-	for (size_t i = 2; i <= pub_exponent; ++i)
+	CALC_INT result = 1, ch = (CALC_INT)aChar;
+	ch %= aBound;
+	while (aExp > 0)
 		{
-		result *= (CALC_INT)aChar;
-		result %= max_bound;
+		if (aExp % 2 == 1)
+			result = (result * ch) % aBound;
+		aExp >>= 1;
+		ch = (ch * ch) % aBound;
 		}
-	result %= max_bound;
-
 	return (CALC_CHAR)result;
 	}
 
-void encrypt_file(FILE * const aInfile, FILE * const aOutfile)
+const CALC_INT encrypt_file(FILE * const aInfile, FILE * const aOutfile)
 	{
 	CALC_CHAR current_char = 0;
+	CALC_INT pub_exponent = 0, max_bound = calculate_key_pair(&pub_exponent);
 #ifdef DEBUG_MODE
-	int count = 0;
-	char curr_char_str[2] = { 0, }, curr_echar_str[2] = { 0, };
+	size_t count = 0;
+	CALC_CHAR curr_char_str[2] = { 0, }, curr_echar_str[2] = { 0, };
 #endif /* DEBUG_MODE */
 	while (!feof(aInfile))
 		{
@@ -160,13 +208,13 @@ void encrypt_file(FILE * const aInfile, FILE * const aOutfile)
 			throw EBadScan;
 			}
 
-		if (current_char != 255)
+		if (current_char != LIMIT)
 			{
-			putc(encrypt_character(current_char), aOutfile);
+			putc(encrypt_character(current_char, pub_exponent, max_bound), aOutfile);
 #ifdef DEBUG_MODE
 			curr_char_str[0] = current_char;
-			curr_echar_str[0] = encrypt_character(current_char);
-			fprintf(stdout, "[%d(%s) > %d(%s)]%-12s", current_char, IS_IN_LETTER_RANGE(curr_char_str), encrypt_character(current_char), IS_IN_LETTER_RANGE(curr_echar_str), "");
+			curr_echar_str[0] = encrypt_character(current_char, pub_exponent, max_bound);
+			fprintf(stdout, "[%d(%s) > %d(%s)]%-12s", current_char, IS_IN_LETTER_RANGE(curr_char_str), encrypt_character(current_char, pub_exponent, max_bound), IS_IN_LETTER_RANGE(curr_echar_str), "");
 			++count;
 			if (count % DEBUG_NUMBER_OF_COLUMNS == 0)
 				fprintf(stdout, "\n");
@@ -177,4 +225,5 @@ void encrypt_file(FILE * const aInfile, FILE * const aOutfile)
 	fprintf(stdout, "\nNumber of characters: %d", count);
 	fprintf(stdout, "\n");
 #endif /* DEBUG_MODE */
+	return share_secret(max_bound);
 	}
