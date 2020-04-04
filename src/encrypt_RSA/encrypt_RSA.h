@@ -6,13 +6,10 @@
 
 #ifdef __cplusplus
 #include <cstdio>
-#include <cstdlib>
-#include <ctime>
 #else
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 #endif
+#include "CEncryptRSA.h"
 
 /* displays all printed chars as DEC values on console */
 //#define DEBUG_MODE
@@ -34,8 +31,7 @@
 #define SPACE ' '
 
 
-typedef unsigned long long CALC_INT;
-typedef unsigned char CALC_CHAR;
+extern const char *ErrorStr[];
 
 enum TError
 	{
@@ -51,11 +47,7 @@ int CloseFile(FILE *aInFile, FILE *aOutFile = nullptr);
 void CloseProgram(char **aInput = nullptr, char **aOutput = nullptr, FILE *aFin = nullptr, FILE *aFout = nullptr, const char *aArgv0 = nullptr);
 void OpenInputFile(char *aFilename, FILE **aFile, char ** const aArgv = nullptr);
 void OpenOutputFile(char *aFilename, FILE **aFile, const int aArgc = 0, char ** const aArgv = nullptr);
-const CALC_CHAR EncryptCharacter(const CALC_CHAR aChar, CALC_INT aExp, const CALC_INT aBound);
 const CALC_INT EncryptFile(FILE * const aInfile, FILE * const aOutfile);
-const CALC_INT CalculateKeyPair(CALC_INT * const aPubE, CALC_INT *const aPrivE = nullptr);
-bool IsPrime(const CALC_INT aNum);
-void GenerateRandomPrimes(CALC_INT * const aP, CALC_INT * const aQ);
 const CALC_INT ShareSecret(const CALC_INT aVal);
 
 #endif /* __ENCRYPT_RSA__ */

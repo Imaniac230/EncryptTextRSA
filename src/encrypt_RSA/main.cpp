@@ -20,8 +20,9 @@ int main(int argc, char **argv)
 		OpenInputFile(input, &fin);
 		OpenOutputFile(output, &fout);
 		}
-	catch (...)
+	catch (enum TError &e)
 		{
+		fprintf(stderr, "%s: Error while attempting to open files (%s).\n\n", argv[0], ErrorStr[e]);
 		CloseProgram(&input, &output, fin, fout);
 		return -1;
 		}
@@ -30,9 +31,9 @@ int main(int argc, char **argv)
 		{
 		fprintf(stdout, "\n%s: Secret! {%lld}\n\n", argv[0], EncryptFile(fin, fout));
 		}
-	catch (...)
+	catch (enum TError &e)
 		{
-		fprintf(stderr, "%s: Error while attempting to scan file \"%s\".\n\n", argv[0], input);
+		fprintf(stderr, "%s: Error while attempting to scan file \"%s\" (%s).\n\n", argv[0], input, ErrorStr[e]);
 		CloseProgram(&input, &output, fin, fout);
 		return -2;
 		}
