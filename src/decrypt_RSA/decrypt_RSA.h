@@ -4,9 +4,15 @@
 #define _CRT_SECURE_NO_WARNINGS
 //#define _ALLOW_COMPILER_AND_STL_VERSION_MISMATCH
 
+#ifdef __cplusplus
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
+#else
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#endif
 
 /* displays all printed chars as DEC values on console */
 //#define DEBUG_MODE
@@ -33,7 +39,7 @@ typedef unsigned char CALC_CHAR;
 
 enum TError
 	{
-	Enullptr = 0,
+	ENullptr = 0,
 	EBadName,
 	EBadOpen,
 	EBadScan,
@@ -41,16 +47,16 @@ enum TError
 	};
 
 
-int close_file(FILE *aInFile, FILE *aOutFile = nullptr);
-void close_program(const char *aArgv0, char *aInput = nullptr, char *aOutput = nullptr, FILE *aFin = nullptr, FILE *aFout = nullptr);
-void open_input_file(char ** const Aargv, char *aFilename, FILE **aFile);
-void open_output_file(const int Aargc, char ** const Aargv, char *aFilename, FILE **aFile);
-const CALC_CHAR encrypt_character(const CALC_CHAR aChar, CALC_INT aExp, const CALC_INT aBound);
-void decrypt_file(FILE * const aInfile, FILE * const aOutfile);
-const CALC_INT calculate_key_pair(CALC_INT * const aPubE, CALC_INT * const aPrivE = nullptr);
-bool is_prime(const CALC_INT aNum);
-void generate_primes(CALC_INT * const aP, CALC_INT * const aQ);
-void generate_random_primes(CALC_INT * const aP, CALC_INT * const aQ);
-const CALC_INT get_secret(const int Aargc, char ** const Aargv);
+int CloseFile(FILE *aInFile, FILE *aOutFile = nullptr);
+void CloseProgram(char **aInput = nullptr, char **aOutput = nullptr, FILE *aFin = nullptr, FILE *aFout = nullptr, const char *aArgv0 = nullptr);
+void OpenInputFile(char *aFilename, FILE **aFile, char ** const aArgv = nullptr);
+void OpenOutputFile(char *aFilename, FILE **aFile, const int aArgc = 0, char ** const aArgv = nullptr);
+const CALC_CHAR EncryptCharacter(const CALC_CHAR aChar, CALC_INT aExp, const CALC_INT aBound);
+void DecryptFile(FILE * const aInfile, FILE * const aOutfile);
+const CALC_INT CalculateKeyPair(CALC_INT * const aPubE, CALC_INT * const aPrivE = nullptr);
+bool IsPrime(const CALC_INT aNum);
+void GeneratePrimes(CALC_INT * const aP, CALC_INT * const aQ);
+void GenerateRandomPrimes(CALC_INT * const aP, CALC_INT * const aQ);
+const CALC_INT GetSecret(const int Aargc = 0, char ** const Aargv = nullptr);
 
 #endif /* __DECRYPT_RSA__ */

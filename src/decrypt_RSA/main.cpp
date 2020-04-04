@@ -6,7 +6,7 @@ int main(int argc, char **argv)
 	if (argc > 4)
 		{
 		fprintf(stderr, "%s: Too many input arguments.\n\n", argv[0]);
-		close_program(argv[0]);
+		CloseProgram();
 		return -1;
 		}
 
@@ -17,28 +17,28 @@ int main(int argc, char **argv)
 
 	try
 		{
-		open_input_file(argv, input, &fin);
-		open_output_file(argc, argv, output, &fout);
+		OpenInputFile(input, &fin);
+		OpenOutputFile(output, &fout);
 		}
 	catch (...)
 		{
-		close_program(argv[0], input, output, fin, fout);
+		CloseProgram(&input, &output, fin, fout);
 		return -1;
 		}
 
 	try
 		{
-		decrypt_file(fin, fout);
+		DecryptFile(fin, fout);
 		}
 	catch (...)
 		{
-		fprintf(stderr, "%s: Error scanning file \"%s\".\n\n", argv[0], input);
-		close_program(argv[0], input, output, fin, fout);
+		fprintf(stderr, "%s: Error while attempting to scan file \"%s\".\n\n", argv[0], input);
+		CloseProgram(&input, &output, fin, fout);
 		return -2;
 		}
 
 	fprintf(stdout, "\n%s: File \"%s\" decrypted (\"%s\").\n\n", argv[0], input, output);
-	close_program(argv[0], input, output, fin, fout);
+	CloseProgram(&input, &output, fin, fout);
 
 	return 0;
 	}

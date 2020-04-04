@@ -1,7 +1,7 @@
 #include "encrypt_RSA.h"
 
 
-int close_file(FILE *aInFile, FILE *aOutFile)
+int CloseFile(FILE *aInFile, FILE *aOutFile)
 	{
 	int outf = 0, inf = 0;
 	if (aInFile)
@@ -17,83 +17,108 @@ int close_file(FILE *aInFile, FILE *aOutFile)
 	return ((outf == EOF || inf == EOF) ? EOF : 0);
 	}
 
-void close_program(const char *aArgv0, char *aInput, char *aOutput, FILE *aFin, FILE *aFout)
+void CloseProgram(char **aInput, char **aOutput, FILE *aFin, FILE *aFout, const char * const aArgv0)
 	{
-	if (!aArgv0)
-		throw Enullptr;
+	const char *argv0 = nullptr;
+	if (aArgv0)
+		argv0 = aArgv0;
+	else
+		argv0 = __argv[0];
 
-	close_file(aFin, aFout);
+	CloseFile(aFin, aFout);
 	if (aInput)
-		delete[](aInput);
+		{
+		delete[](*aInput);
+		*aInput = nullptr;
+		}
 	if (aOutput)
-		delete[](aOutput);
+		{
+		delete[](*aOutput);
+		*aOutput = nullptr;
+		}
 
-	fprintf(stdout, "\n%s: Press \"enter\" to exit.", aArgv0);
-	while ((getchar()) != NEW_LINE);
+	fprintf(stdout, "\n%s: Press \"enter\" to exit.", argv0);
+	fseek(stdin, 0, SEEK_SET);
 	while ((getchar()) != NEW_LINE);
 	}
 
-void open_input_file(char ** const Aargv, char *aFilename, FILE **aFile)
+void OpenInputFile(char *aFilename, FILE **aFile, char ** const aArgv)
 	{
-	if (!Aargv[1])
+	char **argv = nullptr;
+	if (aArgv)
+		argv = aArgv;
+	else
+		argv = __argv;
+
+	if (!argv[1])
 		{
-		fprintf(stdout, "%s: Enter input file: ", Aargv[0]);
+		fprintf(stdout, "%s: Enter input file: ", argv[0]);
 		if (!fscanf(stdin, "%s", aFilename))
 			{
-			fprintf(stderr, "ERROR! Could not scan input file name.\n\n");
-			//delete[](aFilename);
+			fprintf(stderr, "%s: ERROR! Could not scan input file name.\n\n", argv[0]);
 			throw EBadName;
 			}
 		}
 	else
 		{
-		for (size_t i = 0; i < FILE_NAME_LENGTH; ++i)
-			aFilename[i] = Aargv[1][i];
+		size_t i = 0;
+		while (argv[1][i] != 0 && i < FILE_NAME_LENGTH)
+			aFilename[i] = argv[1][i++];
 		}
-	fprintf(stdout, "%s: Input file: \"%s\"\n\n", Aargv[0], aFilename);
+	fprintf(stdout, "%s: Input file: \"%s\"\n\n", argv[0], aFilename);
 
 	if (fopen_s(aFile, aFilename, "rb"))
 		{
-		fprintf(stderr, "ERROR! Could not open input file \"%s\".\n\n", aFilename);
-		//delete[](aFilename);
+		fprintf(stderr, "%s: ERROR! Could not open input file \"%s\".\n\n", aFilename, argv[0]);
 		throw EBadOpen;
 		}
 	}
 
-void open_output_file(const int Aargc, char ** const Aargv, char *aFilename, FILE **aFile)
+void OpenOutputFile(char *aFilename, FILE **aFile, const int aArgc, char ** const aArgv)
 	{
-	if (Aargc <= 2)
+	int argc = 0;
+	if (aArgc)
+		argc = aArgc;
+	else
+		argc = __argc;
+
+	char **argv = nullptr;
+	if (aArgv)
+		argv = aArgv;
+	else
+		argv = __argv;
+
+	if (argc <= 2)
 		{
-		fprintf(stdout, "%s: Enter output file: ", Aargv[0]);
+		fprintf(stdout, "%s: Enter output file: ", argv[0]);
 		if (!fscanf(stdin, "%s", aFilename))
 			{
-			fprintf(stderr, "ERROR! Could not scan output file name.\n\n");
-			//delete[](aFilename);
+			fprintf(stderr, "%s: ERROR! Could not scan output file name.\n\n", argv[0]);
 			throw EBadName;
 			}
 		}
 	else
 		{
-		for (size_t i = 0; i < FILE_NAME_LENGTH; ++i)
-			aFilename[i] = Aargv[2][i];
+		size_t i = 0;
+		while (argv[2][i] != 0 && i < FILE_NAME_LENGTH)
+			aFilename[i] = argv[2][i++];
 		}
-	fprintf(stdout, "%s: Output file: \"%s\"\n\n", Aargv[0], aFilename);
+	fprintf(stdout, "%s: Output file: \"%s\"\n\n", argv[0], aFilename);
 
 	if (fopen_s(aFile, aFilename, "wb"))
 		{
-		fprintf(stderr, "%s: ERROR! Could not open output file \"%s\".\n\n", Aargv[0], aFilename);
-		//delete[](aFilename);
+		fprintf(stderr, "%s: ERROR! Could not open output file \"%s\".\n\n", argv[0], aFilename);
 		throw EBadOpen;
 		}
 	}
 
-const CALC_INT share_secret(const CALC_INT aVal)
+const CALC_INT ShareSecret(const CALC_INT aVal)
 	{
-	CALC_INT res = aVal * START_POINT * 2;
+	CALC_INT res = aVal * START_POINT * (CALC_INT)2;
 	return res;
 	}
 
-bool is_prime(const CALC_INT aNum)
+bool IsPrime(const CALC_INT aNum)
 	{
 	if (aNum == 0 || aNum == 1)
 		return false;
@@ -109,10 +134,10 @@ bool is_prime(const CALC_INT aNum)
 	return true;
 	}
 
-void generate_random_primes(CALC_INT * const aP, CALC_INT * const aQ)
+void GenerateRandomPrimes(CALC_INT * const aP, CALC_INT * const aQ)
 	{
 	if (!aP || !aQ)
-		throw Enullptr;
+		throw ENullptr;
 
 	time_t t = 0;
 	srand((unsigned)time(&t));
@@ -120,23 +145,23 @@ void generate_random_primes(CALC_INT * const aP, CALC_INT * const aQ)
 	do
 		{
 		*aP = rand() % LIMIT / 2;
-		while (!is_prime(*aP))
+		while (!IsPrime(*aP))
 			*aP = rand() % LIMIT / 2;
 
 		*aQ = rand() % LIMIT / 2;
-		while (!is_prime(*aQ))
+		while (!IsPrime(*aQ))
 			*aQ = rand() % LIMIT / 2;
 
 		}while ((*aP * *aQ > LIMIT) || (*aP * *aQ < LOW_LIMIT));
 	}
 
-const CALC_INT calculate_key_pair(CALC_INT * const aPubE, CALC_INT * const aPrivE)
+const CALC_INT CalculateKeyPair(CALC_INT * const aPubE, CALC_INT * const aPrivE)
 	{
 	if (!aPubE)
-		throw Enullptr;
+		throw ENullptr;
 
 	CALC_INT P_prime = 0, Q_prime = 0;
-	generate_random_primes(&P_prime, &Q_prime);
+	GenerateRandomPrimes(&P_prime, &Q_prime);
 
 	CALC_INT totient_phi = (P_prime - 1)*(Q_prime - 1);
 
@@ -163,10 +188,7 @@ const CALC_INT calculate_key_pair(CALC_INT * const aPubE, CALC_INT * const aPriv
 		CALC_INT k_integer = START_POINT * START_POINT;
 		CALC_INT zero_condition = (1 + k_integer * totient_phi) % *aPubE;
 		while (zero_condition != 0)
-			{
-			++k_integer;
-			zero_condition = (1 + k_integer * totient_phi) % *aPubE;
-			}
+			zero_condition = (1 + ++k_integer * totient_phi) % *aPubE;
 
 		*aPrivE = (k_integer * totient_phi + 1) / *aPubE;
 		}
@@ -174,7 +196,7 @@ const CALC_INT calculate_key_pair(CALC_INT * const aPubE, CALC_INT * const aPriv
 	return P_prime * Q_prime;
 	}
 
-const CALC_CHAR encrypt_character(const CALC_CHAR aChar, CALC_INT aExp, const CALC_INT aBound)
+const CALC_CHAR EncryptCharacter(const CALC_CHAR aChar, CALC_INT aExp, const CALC_INT aBound)
 	{
 	if (aBound == 1)
 		return (CALC_CHAR)0;
@@ -191,10 +213,10 @@ const CALC_CHAR encrypt_character(const CALC_CHAR aChar, CALC_INT aExp, const CA
 	return (CALC_CHAR)result;
 	}
 
-const CALC_INT encrypt_file(FILE * const aInfile, FILE * const aOutfile)
+const CALC_INT EncryptFile(FILE * const aInfile, FILE * const aOutfile)
 	{
 	CALC_CHAR current_char = 0;
-	CALC_INT pub_exponent = 0, max_bound = calculate_key_pair(&pub_exponent);
+	CALC_INT pub_exponent = 0, max_bound = CalculateKeyPair(&pub_exponent);
 #ifdef DEBUG_MODE
 	size_t count = 0;
 	CALC_CHAR curr_char_str[2] = { 0, }, curr_echar_str[2] = { 0, };
@@ -204,17 +226,17 @@ const CALC_INT encrypt_file(FILE * const aInfile, FILE * const aOutfile)
 		current_char = getc(aInfile);
 		if (ferror(aInfile))
 			{
-			close_file(aInfile, aOutfile);
+			CloseFile(aInfile, aOutfile);
 			throw EBadScan;
 			}
 
 		if (current_char != LIMIT)
 			{
-			putc(encrypt_character(current_char, pub_exponent, max_bound), aOutfile);
+			putc(EncryptCharacter(current_char, pub_exponent, max_bound), aOutfile);
 #ifdef DEBUG_MODE
 			curr_char_str[0] = current_char;
-			curr_echar_str[0] = encrypt_character(current_char, pub_exponent, max_bound);
-			fprintf(stdout, "[%d(%s) > %d(%s)]%-12s", current_char, IS_IN_LETTER_RANGE(curr_char_str), encrypt_character(current_char, pub_exponent, max_bound), IS_IN_LETTER_RANGE(curr_echar_str), "");
+			curr_echar_str[0] = EncryptCharacter(current_char, pub_exponent, max_bound);
+			fprintf(stdout, "[%d(%s) > %d(%s)]%-12s", current_char, IS_IN_LETTER_RANGE(curr_char_str), EncryptCharacter(current_char, pub_exponent, max_bound), IS_IN_LETTER_RANGE(curr_echar_str), "");
 			++count;
 			if (count % DEBUG_NUMBER_OF_COLUMNS == 0)
 				fprintf(stdout, "\n");
@@ -225,5 +247,5 @@ const CALC_INT encrypt_file(FILE * const aInfile, FILE * const aOutfile)
 	fprintf(stdout, "\nNumber of characters: %d", count);
 	fprintf(stdout, "\n");
 #endif /* DEBUG_MODE */
-	return share_secret(max_bound);
+	return ShareSecret(max_bound);
 	}
