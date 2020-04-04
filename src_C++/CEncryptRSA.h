@@ -17,8 +17,8 @@ typedef unsigned char CALC_CHAR;
 class CEncryptRSA
 	{
 	public:
-		CALC_INT Maxbound = 0, PubExponent = 0;
 		CALC_INT LowLimit = 0, HighLimit = 0, PubStartPoint = 0;
+		CALC_INT Maxbound = 0, PubExponent = 0;
 
 	private:
 		CALC_INT Pprime = 0, Qprime = 0, PrivExponent = 0;
