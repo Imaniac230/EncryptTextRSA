@@ -11,4 +11,5 @@ Small programs for encrypting ASCII text file messages with RSA keys.
 * Created only for educational purposes.
 
 ## Platforms
-* Tested in Windows 10 with Visual Studio 2017 (v141-default ~~and v141-clang-c2~~ compiler~~s~~)
+* C++ version tested in Windows 10 with Visual Studio 2017 (v141-default ~~and v141-clang-c2~~ compiler~~s~~)
+* GO version tested in Windows 10 with Visual Studio Code (go default compiler)
