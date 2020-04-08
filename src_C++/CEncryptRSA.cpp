@@ -1,10 +1,10 @@
 #include "CEncryptRSA.h"
 
 
-bool CEncryptRSA::SeedInicialized = false;
-unsigned int CEncryptRSA::Seed = 0;
+bool CryptoRSA::CEncrypt::SeedInicialized = false;
+unsigned int CryptoRSA::CEncrypt::Seed = 0;
 
-bool CEncryptRSA::IsPrime(const CALC_INT aNum)
+bool CryptoRSA::CEncrypt::IsPrime(const CALC_INT aNum)
 	{
 	if (aNum == 0 || aNum == 1)
 		return false;
@@ -20,7 +20,7 @@ bool CEncryptRSA::IsPrime(const CALC_INT aNum)
 	return true;
 	}
 
-void CEncryptRSA::GenerateRandomPrimes()
+void CryptoRSA::CEncrypt::GenerateRandomPrimes()
 	{
 	do
 		{
@@ -35,7 +35,7 @@ void CEncryptRSA::GenerateRandomPrimes()
 		} while ((Pprime * Qprime > HighLimit) || (Pprime * Qprime < LowLimit));
 	}
 
-void CEncryptRSA::GeneratePrimes(CALC_INT aBound)
+void CryptoRSA::CEncrypt::GeneratePrimes(CALC_INT aBound)
 	{
 	bool end = false;
 	for (Pprime = 2; Pprime < (HighLimit + 1) / 2; ++Pprime)
@@ -60,7 +60,7 @@ void CEncryptRSA::GeneratePrimes(CALC_INT aBound)
 		GenerateRandomPrimes();
 	}
 
-const CALC_INT CEncryptRSA::CalculateKeyPair()
+const CryptoRSA::CALC_INT CryptoRSA::CEncrypt::CalculateKeyPair()
 	{
 	CALC_INT totient_phi = (Pprime - 1)*(Qprime - 1);
 
@@ -92,7 +92,7 @@ const CALC_INT CEncryptRSA::CalculateKeyPair()
 	return Pprime * Qprime;
 	}
 
-const CALC_CHAR CEncryptRSA::EncryptCharacter(const CALC_CHAR aChar)
+const CryptoRSA::CALC_CHAR CryptoRSA::CEncrypt::EncryptCharacter(const CALC_CHAR aChar)
 	{
 	if (Maxbound == 1)
 		return (CALC_CHAR)0;
@@ -109,7 +109,7 @@ const CALC_CHAR CEncryptRSA::EncryptCharacter(const CALC_CHAR aChar)
 	return (CALC_CHAR)result;
 	}
 
-const CALC_CHAR CEncryptRSA::DecryptCharacter(const CALC_CHAR aChar)
+const CryptoRSA::CALC_CHAR CryptoRSA::CEncrypt::DecryptCharacter(const CALC_CHAR aChar)
 	{
 	if (Maxbound == 1)
 		return (CALC_CHAR)0;

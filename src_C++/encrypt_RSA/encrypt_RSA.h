@@ -19,11 +19,11 @@
 #define TRUE 1
 #define FALSE 0
 #define FILE_NAME_LENGTH 256
-#define LIMIT (CALC_INT)255
-#define LOW_LIMIT (CALC_INT)227
-#define START_POINT (CALC_INT)2
+#define LIMIT (CryptoRSA::CALC_INT)255
+#define LOW_LIMIT (CryptoRSA::CALC_INT)227
+#define START_POINT (CryptoRSA::CALC_INT)2
 
-#define IS_IN_LETTER_RANGE(character) (((character[0] > (CALC_CHAR)32) && (character[0] < (CALC_CHAR)126)) ? character : (CALC_CHAR*)"Ee")
+#define IS_IN_LETTER_RANGE(character) (((character[0] >= (CryptoRSA::CALC_CHAR)32) && (character[0] <= (CryptoRSA::CALC_CHAR)126)) ? character : (CryptoRSA::CALC_CHAR*)"Ee")
 
 /* white characters definitions */
 #define TAB 9
@@ -47,7 +47,7 @@ int CloseFile(FILE *aInFile, FILE *aOutFile = nullptr);
 void CloseProgram(char **aInput = nullptr, char **aOutput = nullptr, FILE *aFin = nullptr, FILE *aFout = nullptr, const char *aArgv0 = nullptr);
 void OpenInputFile(char *aFilename, FILE **aFile, char ** const aArgv = nullptr);
 void OpenOutputFile(char *aFilename, FILE **aFile, const int aArgc = 0, char ** const aArgv = nullptr);
-const CALC_INT EncryptFile(FILE * const aInfile, FILE * const aOutfile);
-const CALC_INT ShareSecret(const CALC_INT aVal);
+const CryptoRSA::CALC_INT EncryptFile(FILE * const aInfile, FILE * const aOutfile);
+const CryptoRSA::CALC_INT ShareSecret(const CryptoRSA::CALC_INT aVal);
 
 #endif /* __ENCRYPT_RSA__ */

@@ -117,19 +117,19 @@ void OpenOutputFile(char *aFilename, FILE **aFile, const int aArgc, char ** cons
 		}
 	}
 
-const CALC_INT ShareSecret(const CALC_INT aVal)
+const CryptoRSA::CALC_INT ShareSecret(const CryptoRSA::CALC_INT aVal)
 	{
-	CALC_INT res = aVal * START_POINT * (CALC_INT)2;
+	CryptoRSA::CALC_INT res = aVal * START_POINT * (CryptoRSA::CALC_INT)2;
 	return res;
 	}
 
-const CALC_INT EncryptFile(FILE * const aInfile, FILE * const aOutfile)
+const CryptoRSA::CALC_INT EncryptFile(FILE * const aInfile, FILE * const aOutfile)
 	{
-	CALC_CHAR current_char = 0;
-	CEncryptRSA RSA_keys(LOW_LIMIT,LIMIT,START_POINT);
+	CryptoRSA::CALC_CHAR current_char = 0;
+	CryptoRSA::CEncrypt RSA_keys(LOW_LIMIT,LIMIT,START_POINT);
 #ifdef DEBUG_MODE
 	size_t count = 0;
-	CALC_CHAR curr_char_str[2] = { 0, }, curr_echar_str[2] = { 0, };
+	CryptoRSA::CALC_CHAR curr_char_str[2] = { 0, }, curr_echar_str[2] = { 0, };
 #endif /* DEBUG_MODE */
 	while (!feof(aInfile))
 		{
