@@ -3,7 +3,7 @@
 
 #define TOSTR(a) (#a)
 
-const char *ErrorStr[] = { TOSTR(ENullptr), TOSTR(EBadName), TOSTR(EBadOpen), TOSTR(EBadScan), TOSTR(ENegativePrime) };
+const char *ErrorStr[] = { TOSTR(ENullptr), TOSTR(EBadName), TOSTR(EBadOpen), TOSTR(EBadScan) };
 
 
 int CloseFile(FILE *aInFile, FILE *aOutFile)
@@ -146,7 +146,7 @@ const CryptoRSA::CALC_INT EncryptFile(FILE * const aInfile, FILE * const aOutfil
 #ifdef DEBUG_MODE
 			curr_char_str[0] = current_char;
 			curr_echar_str[0] = RSA_keys.EncryptCharacter(current_char);
-			fprintf(stdout, "[%d(%s) > %d(%s)]%-12s", current_char, IS_IN_LETTER_RANGE(curr_char_str), RSA_keys.EncryptCharacter(current_char), IS_IN_LETTER_RANGE(curr_echar_str), "");
+			fprintf(stdout, "[%d(%s) > %d(%s)]%-12s", current_char, IS_IN_LETTER_RANGE(curr_char_str), curr_echar_str[0], IS_IN_LETTER_RANGE(curr_echar_str), "");
 			++count;
 			if (count % DEBUG_NUMBER_OF_COLUMNS == 0)
 				fprintf(stdout, "\n");

@@ -38,8 +38,7 @@ enum TError
 	ENullptr = 0,
 	EBadName,
 	EBadOpen,
-	EBadScan,
-	ENegativePrime
+	EBadScan
 	};
 
 
