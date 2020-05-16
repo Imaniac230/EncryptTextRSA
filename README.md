@@ -12,4 +12,4 @@ Small programs for encrypting ASCII text file messages with RSA keys.
 
 ## Platforms
 * C++ version tested in Windows 10 with Visual Studio 2017 (v141-default ~~and v141-clang-c2~~ compiler~~s~~)
-* GO version tested in Windows 10 with Visual Studio Code (go default compiler)
+* Go version tested in Windows 10 with Visual Studio Code (go default compiler)
