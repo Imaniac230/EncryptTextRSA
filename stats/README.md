@@ -1,4 +1,4 @@
-### `Measure-Program.ps`
+### `Measure-Program.ps1`
 
 Simple powershell script for measuring time performance of the programs.
 
