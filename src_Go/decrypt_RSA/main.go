@@ -61,10 +61,10 @@ func handleErrors(err interface{}) error {
 	return errors.Errorf(fmt.Sprint(err))
 }
 
-func isInLetterRange(character string) string {
+func isInLetterRange(character calcchar) string {
 	var res string
-	if (calcchar(character[0]) >= calcchar(32)) && (calcchar(character[0]) <= calcchar(126)) {
-		res = character
+	if (character >= calcchar(32)) && (character <= calcchar(126)) {
+		res = string(character)
 	} else {
 		res = "Ee"
 	}
@@ -328,8 +328,8 @@ func decryptFile(aInfile, aOutfile *os.File) {
 
 	/* Debug variables */
 	var (
-		count                     uint = 0
-		currcharStr, currecharStr string
+		count        uint     = 0
+		ecurrentchar calcchar = 0
 	)
 	/* Debug variables */
 
@@ -351,9 +351,8 @@ func decryptFile(aInfile, aOutfile *os.File) {
 
 			/* Debug code */
 			if DebugMode {
-				currcharStr = string(currentchar)
-				currecharStr = string(encryptCharacter(currentchar, privexponent, maxbound))
-				fmt.Fprintf(os.Stdout, "[%d(%s) > %d(%s)]%-12s", currentchar, isInLetterRange(currcharStr), encryptCharacter(currentchar, privexponent, maxbound), isInLetterRange(currecharStr), "")
+				ecurrentchar = encryptCharacter(currentchar, privexponent, maxbound)
+				fmt.Fprintf(os.Stdout, "[%d(%s) > %d(%s)]%-12s", currentchar, isInLetterRange(currentchar), ecurrentchar, isInLetterRange(ecurrentchar), "")
 				count++
 				if count%DebugNumberOfColumns == 0 {
 					fmt.Fprintf(os.Stdout, "\n")
