@@ -237,11 +237,11 @@ func generatePrimes(aP, aQ *calcint) {
 	Sec := getSecret()
 
 	end := false
-	for *aP = 2; *aP < LIMIT/2; *aP++ {
+	for *aP = 2; *aP < (LIMIT+1)/2; *aP++ {
 		for !isPrime(*aP) {
 			*aP++
 		}
-		for *aQ = 2; *aQ < LIMIT/2; *aQ++ {
+		for *aQ = 2; *aQ < (LIMIT+1)/2; *aQ++ {
 			for !isPrime(*aQ) {
 				*aQ++
 			}
